@@ -1,0 +1,36 @@
+name: hardening
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify env safety
+        run: dart run tool/verify_env.dart
+
+      - name: Run store readiness audit
+        run: dart run tool/store_readiness_audit.dart --fail-on-warning
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test

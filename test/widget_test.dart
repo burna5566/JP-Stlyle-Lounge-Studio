@@ -7,19 +7,20 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:fadeflow/main.dart';
+import 'package:jp_style_lounge_studio/main.dart';
 
 void main() {
-  testWidgets('shows runtime data shell', (WidgetTester tester) async {
-    await tester.pumpWidget(const JpStyleLoungeStudioApp());
+  testWidgets('shows booking flow shell', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const JpStyleLoungeStudioApp(appwriteConfigValid: false),
+    );
 
     expect(find.text('JP Style Lounge Studio'), findsOneWidget);
-    expect(find.text('Runtime data only'), findsOneWidget);
+    expect(find.text('Book Appointment'), findsOneWidget);
     expect(
-      find.textContaining(
-        'does not bundle barber profiles, services, or availability',
-      ),
+      find.textContaining('Runtime config status: INVALID'),
       findsOneWidget,
     );
+    expect(find.text('Choose service'), findsOneWidget);
   });
 }

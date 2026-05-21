@@ -28,11 +28,11 @@ JP Style Lounge Studio is a mobile booking platform built for Accra-based barber
 | Layer | Technology |
 |-------|-----------|
 | Mobile | Flutter (iOS + Android) |
-| Backend | Supabase (PostgreSQL + Auth + Realtime) |
+| Backend | Appwrite Cloud (Auth + Databases + Storage + Functions) |
 | Payments | Paystack (GH₵ / Mobile Money / Cards) |
 | Notifications | Firebase Cloud Messaging + Africa's Talking SMS |
 | Maps | Google Maps Flutter |
-| Storage | Supabase Storage |
+| Storage | Appwrite Storage |
 
 ---
 
@@ -71,6 +71,28 @@ See [ROADMAP.md](ROADMAP.md) for full detail.
 
 Use `.env.example` as the default production profile.
 
+Environment files bundled into Flutter must contain client-safe values only.
+Do not place Appwrite API keys, Paystack secret keys, webhook secrets, or SMS
+provider secrets in `.env.development` or `.env.production`.
+
+Run this check before commits to catch leaks or missing keys:
+
+```bash
+dart run tool/verify_env.dart
+```
+
+Run this readiness check before release work:
+
+```bash
+dart run tool/store_readiness_audit.dart
+```
+
+Android release signing setup:
+
+1. Copy `android/key.properties.example` to `android/key.properties`.
+2. Fill real keystore values in `android/key.properties`.
+3. Keep `android/key.properties` and keystore files out of git.
+
 ---
 
 ## Project Structure
@@ -83,7 +105,12 @@ JPStyleLoungeStudio/
 ├── docs/
 │   ├── PRD.md              # Full product requirements
 │   ├── ARCHITECTURE.md     # Tech stack & architecture
-│   └── SPRINTS.md          # Sprint breakdown
-└── supabase/
-    └── migrations/         # Database migrations
+│   ├── SPRINTS.md          # Sprint breakdown
+│   └── APPWRITE_BACKEND.md # Backend data model plan
+├── lib/core/appwrite/
+│   ├── appwrite_config.dart       # Runtime config contract + validation
+│   ├── appwrite_client_factory.dart # Appwrite SDK client factory
+│   └── runtime_guard.dart         # Boot-time config verification
+└── tool/
+    └── verify_env.dart     # Local environment safety checks
 ```

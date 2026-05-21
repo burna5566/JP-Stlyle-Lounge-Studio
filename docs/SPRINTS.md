@@ -29,7 +29,7 @@
 ## Sprint 0 — Foundation & Setup `Week 1–2` `~20h`
 
 ### Goals
-Working Flutter app that connects to Supabase dev instance with all migrations applied.
+Working Flutter app that connects to Appwrite dev instance with all migrations applied.
 
 ### Tasks
 
@@ -39,7 +39,7 @@ Working Flutter app that connects to Supabase dev instance with all migrations a
   ```
   lib/
   ├── core/
-  │   ├── supabase/       # client, config
+  │   ├── appwrite/       # client, config
   │   ├── router/         # go_router setup
   │   └── theme/          # Material 3 theme tokens
   ├── features/
@@ -57,13 +57,13 @@ Working Flutter app that connects to Supabase dev instance with all migrations a
 - [ ] Add app icons (Android + iOS) using `flutter_launcher_icons`
 - [ ] Add splash screen using `flutter_native_splash`
 
-#### Supabase Setup `~4h`
-- [ ] Create Supabase project (dev instance)
+#### Appwrite Setup `~4h`
+- [ ] Create Appwrite project (dev instance)
 - [ ] Apply `001_initial_schema.sql`
 - [ ] Seed the initial barber record in the backend with a route-resolvable slug
 - [ ] Seed 5 services with prices in GH₵
 - [ ] Seed Mon–Sat 9AM–7PM recurring availability
-- [ ] Verify RLS policies via Supabase table editor
+- [ ] Verify RLS policies via Appwrite table editor
 
 #### External Services `~4h`
 - [ ] Paystack sandbox account + test API keys
@@ -81,8 +81,8 @@ Working Flutter app that connects to Supabase dev instance with all migrations a
 
 #### Verification `~3h`
 - [ ] App boots on Android emulator without errors
-- [ ] Supabase client connects (basic query runs)
-- [ ] Auth test: create a user via Supabase dashboard, query from app
+- [ ] Appwrite client connects (basic query runs)
+- [ ] Auth test: create a user via Appwrite dashboard, query from app
 - [ ] `flutter test` passes (at least 1 smoke test)
 
 ### Done When
@@ -98,22 +98,22 @@ Any customer can sign up/in. Paps James can log in as barber and be routed to hi
 ### Tasks
 
 #### Auth Flows `~10h`
-- [ ] Splash screen with Supabase session check → redirect
+- [ ] Splash screen with Appwrite session check → redirect
 - [ ] **Phone OTP Flow:**
   - Phone input screen (Ghana +233 format validation)
   - OTP verification screen (6-digit, 60s resend timer)
-  - Supabase `signInWithOtp(phone: ...)`
+  - Appwrite `signInWithOtp(phone: ...)`
 - [ ] **Email + Password Flow:**
   - Login screen
   - Registration screen (name, email, password)
 - [ ] **Google Sign-In:**
-  - `google_sign_in` + Supabase OAuth
+  - `google_sign_in` + Appwrite OAuth
   - Handle account linking (same email, different provider)
 - [ ] **Guest Mode:**
   - "Continue as guest" button on auth screen
   - Guest state stored locally; prompt account creation after booking confirmed
 - [ ] Barber login: email + password only (no phone OTP for barber in Phase 1)
-- [ ] Barber 2FA: TOTP prompt after login (Supabase MFA)
+- [ ] Barber 2FA: TOTP prompt after login (Appwrite MFA)
 
 #### Role-Based Routing `~5h`
 - [ ] On auth success: query `users.role`
@@ -197,7 +197,7 @@ Real-time slot availability system with no double-bookings possible.
 
 ### Tasks
 
-#### Supabase Slot Logic `~10h`
+#### Appwrite Slot Logic `~10h`
 - [ ] DB function: `get_available_slots(barber_id, date)` returns TIME[] of available slots
   - Query `availability` for recurring schedule on `day_of_week`
   - Exclude one-off `blocked` date entries
@@ -208,7 +208,7 @@ Real-time slot availability system with no double-bookings possible.
 - [ ] Unique constraint on `bookings(barber_id, slot_date, slot_time)` (already in schema)
 
 #### Real-Time Subscription `~4h`
-- [ ] Supabase Realtime channel: subscribe to `bookings` INSERT on `barber_id = ?` for selected date
+- [ ] Appwrite Realtime channel: subscribe to `bookings` INSERT on `barber_id = ?` for selected date
 - [ ] On new booking → refetch available slots for that date
 - [ ] Show "Slot just taken" snackbar if currently-selected slot becomes unavailable
 - [ ] `AvailabilityNotifier` (Riverpod): manages stream subscription lifecycle
@@ -266,7 +266,7 @@ Complete end-to-end booking wizard from service to confirmation (payment wired i
 - [ ] Client name field (pre-filled from `auth.user.name`)
 - [ ] Phone field (pre-filled from `auth.user.phone`; editable)
 - [ ] Notes `TextFormField` with 200-character limit
-- [ ] Photo upload: `image_picker` → compress → upload to Supabase Storage → store URL in state
+- [ ] Photo upload: `image_picker` → compress → upload to Appwrite Storage → store URL in state
 - [ ] Booking summary card (service name, date, time, total)
 - [ ] "Next" enabled when name + phone filled
 
@@ -332,7 +332,7 @@ Real payments via Paystack Mobile Money and card. Webhooks update booking status
 #### Testing `~2h`
 - [ ] Paystack sandbox: test MTN Mobile Money flow end-to-end
 - [ ] Test card payment with Paystack test cards
-- [ ] Simulate webhook locally with ngrok / Supabase test webhook
+- [ ] Simulate webhook locally with ngrok / Appwrite test webhook
 
 ### Done When
 > Real money (sandbox) flows through. Booking confirmed in DB after successful payment. Webhook updates status.
@@ -370,7 +370,7 @@ Wire the following to `send-notification`:
 - [ ] No-show risk → push to Paps James (30 min post-slot)
 
 #### Scheduled Reminders (pg_cron) `~4h`
-- [ ] `pg_cron` extension enabled on Supabase
+- [ ] `pg_cron` extension enabled on Appwrite
 - [ ] Job: every 15 minutes, find bookings where `slot_date + slot_time = NOW() + 24h` → call `send-notification`
 - [ ] Job: every 15 minutes, find bookings where `slot_date + slot_time = NOW() + 1h` → call `send-notification`
 - [ ] Prevent duplicate reminders: `notifications_sent` JSONB column on `bookings` (flags `['24h', '1h']`)
@@ -430,7 +430,7 @@ Wire the following to `send-notification`:
 - [ ] `ReviewScreen`:
   - Star tap (1–5)
   - Optional comment `TextField`
-  - Optional photo upload (Supabase Storage)
+  - Optional photo upload (Appwrite Storage)
   - Submit → INSERT to `reviews`
 - [ ] One review per booking: handle duplicate insert gracefully
 
@@ -507,7 +507,7 @@ Wire the following to `send-notification`:
 - [ ] Booking wizard: back navigation doesn't re-submit
 - [ ] Network failure on payment step: retry flow, no duplicate charge
 - [ ] FCM token refresh handled without crash
-- [ ] Supabase session expiry: silent token refresh, no logout surprise
+- [ ] Appwrite session expiry: silent token refresh, no logout surprise
 
 #### UI Polish `~5h`
 - [ ] Consistent spacing / typography via `ThemeData`
@@ -523,17 +523,17 @@ Wire the following to `send-notification`:
 - [ ] Integration test: full booking flow on emulator (`integration_test` package)
 - [ ] Paystack sandbox end-to-end (real test card)
 - [ ] Notification delivery test (FCM test message via Firebase console)
-- [ ] RLS test: try to access another user's booking via raw Supabase call
+- [ ] RLS test: try to access another user's booking via raw Appwrite call
 
 #### Launch Checklist `~5h`
-- [ ] Create Supabase production project
+- [ ] Create Appwrite production project
 - [ ] Migrate schema + seed Paps James data in production
 - [ ] Set production environment variables in Flutter + Edge Functions
 - [ ] Enable Paystack live keys (after Paps James completes business verification)
 - [ ] Google Play Internal Testing track upload (APK signed with release keystore)
 - [ ] Apple TestFlight submission (requires Apple Developer account)
 - [ ] Sentry error tracking wired (`sentry_flutter`)
-- [ ] Supabase alerts configured (DB size, Edge Function errors)
+- [ ] Appwrite alerts configured (DB size, Edge Function errors)
 - [ ] Paps James user admin walkthrough (Loom recording)
 - [ ] Soft launch: 5 friends/family beta test first week
 

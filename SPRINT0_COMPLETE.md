@@ -1,4 +1,8 @@
-# ✅ Sprint 0 Environment Setup — Completed
+# Sprint 0 Environment Setup — Historical Snapshot
+
+> This document is a historical planning snapshot from the earlier Supabase
+> direction. The current backend target is Appwrite. Treat Supabase migration
+> claims below as stale until they are replaced by Appwrite setup artifacts.
 
 **Date:** March 25, 2026  
 **Status:** READY FOR DEVELOPMENT

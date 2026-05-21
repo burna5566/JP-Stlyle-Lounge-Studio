@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "364000454014",
+    "project_id": "jp-style-lounge-studio",
+    "storage_bucket": "jp-style-lounge-studio.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364000454014:android:743ee9dc5512bac48e7f2f",
+        "android_client_info": {
+          "package_name": "app.jpstyleloungestudio.jp_style_lounge_studio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB69D8ln1VYm48CkD2_B5ZJ4Iaixej-y3s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

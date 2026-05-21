@@ -1,4 +1,4 @@
-name: fadeflow
+name: jp_style_lounge_studio
 description: "JP Style Lounge Studio booking application."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -36,8 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # Core Backend & Auth
-  supabase_flutter: ^2.5.2
-  supabase: ^2.5.2
+  appwrite: ^23.1.0
 
   # State Management
   flutter_riverpod: ^2.4.9
@@ -59,8 +58,8 @@ dependencies:
   flutter_paystack_plus: ^2.5.0
 
   # Notifications
-  firebase_core: ^2.27.0
-  firebase_messaging: ^14.7.10
+  firebase_core: ^4.7.0
+  firebase_messaging: ^16.2.0
 
   # Maps
   google_maps_flutter: ^2.6.0
@@ -69,6 +68,7 @@ dependencies:
   # Image & Storage
   image_picker: ^1.1.1
   cached_network_image: ^3.3.1
+  flutter_dotenv: ^5.1.0
 
   # Charts & Analytics
   fl_chart: ^0.68.0
@@ -80,17 +80,34 @@ dependencies:
   # Networking & Data
   http: ^1.2.1
   dio: ^5.4.0
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
+  # encourage good coding practices.
+
+  # Appwrite server SDK — used only by tool/ seeding scripts, not bundled in app
+  dart_appwrite: ^15.0.0
+
+  # App icon generation
+  flutter_launcher_icons: ^0.14.3
+
+  # The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/branding/app_icon_clean.png
+  adaptive_icon_foreground: assets/branding/app_icon_clean.png
+  adaptive_icon_background: "#0F172A"
+  remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -102,6 +119,12 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # These env files must contain client-safe values only. Backend/admin secrets
+  # belong in Appwrite Functions, CI secrets, or local unbundled setup files.
+  assets:
+    - .env.development
+    - .env.production
 
   # To add assets to your application, add an assets section, like this:
   # assets:

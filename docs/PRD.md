@@ -184,7 +184,7 @@ JP Style Lounge Studio is a mobile-first barber booking platform, launching for 
 - Duration displayed and calculated
 
 #### Step 2 — Date & Time Picker
-- Available slots only (real-time from Supabase)
+- Available slots only (real-time from Appwrite)
 - Tabs: Today / This Week / Next Week
 - Daily list view: 9AM–7PM slots
 - Real-time update if slot taken while browsing
@@ -284,7 +284,7 @@ JP Style Lounge Studio is a mobile-first barber booking platform, launching for 
 | Real-Time | Slot availability updates within 1 second of a booking |
 | Offline | Services and profile accessible without internet |
 | Offline Queue | Failed bookings retry automatically on reconnect |
-| Security | HTTPS everywhere; Paystack PCI DSS compliance; Supabase RLS isolation |
+| Security | HTTPS everywhere; Paystack PCI DSS compliance; Appwrite RLS isolation |
 | Scalability | Handle 100 concurrent bookings; support 10,000+ users |
 | Reliability | 99.9% uptime target; SMS fallback if push fails |
 | Accessibility | Ghana English locale; 48dp minimum tap targets |
@@ -326,7 +326,7 @@ JP Style Lounge Studio is a mobile-first barber booking platform, launching for 
 |-----------|---------------|
 | All DB tables include `barber_id` | Schema enforced from migration 001 |
 | Customer app resolves the active barber from route or tenant context | No barber picker UI in Phase 1 |
-| Barber dashboard auto-filters to `auth.uid()` | Via Supabase RLS |
+| Barber dashboard auto-filters to `auth.uid()` | Via Appwrite RLS |
 | Paystack account mapped to `barber_id` | `barber_paystack_accounts` table |
 | RLS policies on all tables | Applied in `001_initial_schema.sql` |
 | Slug system ready | `barbers.slug` supports public profile routes |

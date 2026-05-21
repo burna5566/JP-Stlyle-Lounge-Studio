@@ -1,69 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-const String kAppEnv = String.fromEnvironment('APP_ENV', defaultValue: 'production');
-const bool kFreeMode = bool.fromEnvironment('FREE_MODE', defaultValue: false);
+import 'core/appwrite/runtime_guard.dart';
+import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
+import 'core/notifications/notification_service.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const JpStyleLoungeStudioApp());
+const String _appEnvDefine = String.fromEnvironment('APP_ENV');
+const String _environmentDefine = String.fromEnvironment('ENVIRONMENT');
+final String kAppEnv = _resolveAppEnv();
+
+String _resolveAppEnv() {
+  if (_appEnvDefine.isNotEmpty) {
+    return _appEnvDefine;
+  }
+
+  if (_environmentDefine.isNotEmpty) {
+    return _environmentDefine;
+  }
+
+  return 'production';
+}
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
+  debugPrint('Handling a background message: ${message.messageId}');
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(
+    fileName: kAppEnv == 'development' ? '.env.development' : '.env.production',
+  );
+
+  await NotificationService.instance.initialize(
+    backgroundHandler: firebaseMessagingBackgroundHandler,
+  );
+
+  final appwriteConfigValid = RuntimeGuard.verifyAppwriteConfig();
+
+  runApp(JpStyleLoungeStudioApp(appwriteConfigValid: appwriteConfigValid));
 }
 
 class JpStyleLoungeStudioApp extends StatelessWidget {
-  const JpStyleLoungeStudioApp({super.key});
+  const JpStyleLoungeStudioApp({required this.appwriteConfigValid, super.key});
+
+  final bool appwriteConfigValid;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final router = AppRouter.create(appwriteConfigValid: appwriteConfigValid);
+
+    return MaterialApp.router(
       title: 'JP Style Lounge Studio',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF006B3F)),
-        useMaterial3: true,
-      ),
-      home: const BootstrapScreen(),
-    );
-  }
-}
-
-class BootstrapScreen extends StatelessWidget {
-  const BootstrapScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'JP Style Lounge Studio',
-                    style: theme.textTheme.displaySmall,
-                  ),
-                  const SizedBox(height: 16),
-                  Text('Runtime data only', style: theme.textTheme.titleLarge),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Mode: ${kAppEnv.toUpperCase()} ${kFreeMode ? '(FREE)' : '(PAID)'}',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'This build does not bundle barber profiles, services, or availability. Connect your backend and resolve the active business context at runtime before rendering booking flows.',
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+      theme: AppTheme.light(),
+      routerConfig: router,
     );
   }
 }

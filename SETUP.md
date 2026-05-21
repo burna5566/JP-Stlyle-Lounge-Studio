@@ -16,7 +16,7 @@ Before starting, ensure you have these installed:
 - **VS Code** Extensions:
   - Flutter
   - Dart
-  - Supabase
+  - Appwrite
   - GitHub Copilot (recommended)
 
 ---
@@ -57,9 +57,9 @@ flutter doctor
 cp .env.example .env
 ```
 
-### 2.2 Fill in Production Credentials
+### 2.2 Fill in Client-Safe Configuration
 
-Edit `.env` with your development credentials:
+Edit `.env.development` and `.env.production` with client-safe values only:
 
 ```env
 # Core environment
@@ -73,15 +73,13 @@ ENABLE_SMS_NOTIFICATIONS=true
 ENABLE_MAPS=true
 MOCK_PAYMENT_SUCCESS=false
 
-# Supabase Project
-SUPABASE_URL=https://YOUR_DEV_PROJECT.supabase.co
-SUPABASE_ANON_KEY=YOUR_DEV_ANON_KEY
-SUPABASE_SERVICE_ROLE_KEY=YOUR_DEV_SERVICE_ROLE_KEY
+# Appwrite public client config
+APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=YOUR_APPWRITE_PROJECT_ID
+APPWRITE_DATABASE_ID=jp_style_lounge_dev
 
-# Paystack (Live)
+# Paystack public key
 PAYSTACK_PUBLIC_KEY=pk_live_YOUR_PUBLIC_KEY
-PAYSTACK_SECRET_KEY=sk_live_YOUR_SECRET_KEY
-PAYSTACK_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET
 
 # Firebase (Production)
 FIREBASE_PROJECT_ID=jp-style-lounge-studio-prod
@@ -89,45 +87,39 @@ FIREBASE_PROJECT_ID=jp-style-lounge-studio-prod
 # Google Maps (Production)
 GOOGLE_MAPS_API_KEY=YOUR_PROD_MAPS_KEY
 
-# Africa's Talking (Production)
-AFRICAS_TALKING_API_KEY=YOUR_PROD_AT_API_KEY
+# Backend-only secrets such as APPWRITE_API_KEY, PAYSTACK_SECRET_KEY,
+# PAYSTACK_WEBHOOK_SECRET, and AFRICAS_TALKING_API_KEY must not go here.
 ```
 
 **Production default:** paid integrations are enabled and must be configured with live credentials before launch.
 
-**Never commit `.env`!** It's in `.gitignore`.
+**Never commit backend/admin secrets.** The Flutter-bundled env files are for
+public client configuration only.
 
 ---
 
-## Step 3: Supabase Setup
+## Step 3: Appwrite Setup
 
-### 3.1 Create Supabase Project
+### 3.1 Create Appwrite Project
 
-1. Go to [supabase.com](https://supabase.com)
-2. Create new project → `jp-style-lounge-studio-dev`
-3. Wait for DB initialization (~2 min)
-4. Copy `Project URL` and `Anon Key` to `.env`
+1. Go to [cloud.appwrite.io](https://cloud.appwrite.io)
+2. Create or open the JP Style Lounge Studio project
+3. Add Flutter platforms for the package/bundle IDs you will run
+4. Copy the endpoint and project ID to `.env.development`
 
-### 3.2 Apply Database Migration
+### 3.2 Create Database Shape
 
-```bash
-# Option A: Via Supabase CLI (recommended)
-supabase db push
-
-# Option B: Via Supabase Dashboard
-# - Go to SQL Editor
-# - Create new query
-# - Paste: supabase/migrations/001_initial_schema.sql
-# - Run
-```
+Use [docs/APPWRITE_BACKEND.md](docs/APPWRITE_BACKEND.md) as the current
+collection and bucket plan. Server/admin API keys are only for setup scripts
+or Appwrite Functions and must never be added to Flutter env assets.
 
 ### 3.3 Verify Schema
 
-In Supabase Dashboard:
-- Go to **Table Editor**
+In Appwrite Console:
+- Go to **Databases**
 - Verify tables exist:
   - `barbers`, `users`, `services`, `bookings`, `reviews`, etc.
-- Check **RLS Policies** are enabled
+- Check collection permissions before using production data
 
 ---
 
@@ -176,7 +168,7 @@ flutter run -d "iPhone 15 Pro"
 
 App should:
 1. Show JP Style Lounge Studio splash screen
-2. Connect to Supabase
+2. Connect to Appwrite
 3. No errors in console
 
 ```bash
@@ -249,6 +241,13 @@ git push origin feature/auth-flows
 - `feature/*` → Individual features
 - `bugfix/*` → Bug fixes
 
+### Merge Rules
+
+- `feature/*` and `bugfix/*` merge into `develop` via pull request only.
+- `develop` merges into `main` only from a release PR after all quality gates pass.
+- Direct pushes to `main` are disallowed.
+- PRs require green checks for `flutter analyze`, `flutter test`, `tool/verify_env.dart`, and `tool/store_readiness_audit.dart`.
+
 ### Commit Conventions
 
 ```
@@ -270,7 +269,7 @@ refactor: restructure auth providers
 flutter pub upgrade
 
 # Or specific package
-flutter pub upgrade supabase_flutter
+flutter pub upgrade appwrite_flutter
 ```
 
 ### Generate Code
@@ -296,15 +295,15 @@ flutter pub run build_runner build
 
 ## Troubleshooting
 
-### Issue: "Supabase: Auth token missing"
+### Issue: "Appwrite: auth or config missing"
 
-**Solution:** Check `.env` has correct `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+**Solution:** Check `.env` has correct `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`, and collection IDs.
 
 ### Issue: "App crashes on startup"
 
 **Solution:** Check `flutter logs` for error. Common causes:
 - Missing `.env` file
-- Invalid Supabase credentials
+- Invalid Appwrite credentials
 - Firebase not initialized
 
 ### Issue: "Emulator doesn't start"
@@ -376,7 +375,7 @@ Press `F5` to debug.
 ## Need Help?
 
 - Check [Flutter Docs](https://flutter.dev/docs)
-- Check [Supabase Docs](https://supabase.com/docs)
+- Check [Appwrite Docs](https://appwrite.com/docs)
 - See [ROADMAP.md](../ROADMAP.md) for project phases
 - See [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) for tech details
 

@@ -26,6 +26,14 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>JP Style Lounge Studio uses the camera for optional haircut reference photos and review uploads.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>JP Style Lounge Studio uses your location to show directions to the barber location on the map.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>JP Style Lounge Studio uses your photo library so you can select haircut reference photos and review images.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>JP Style Lounge Studio can save generated booking media when you choose to export or share it.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -47,6 +55,10 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -15,6 +15,18 @@ Phase 3  │  Multi-Barber Platform       │  Month 7–12
 Phase 4  │  Marketplace & Monetisation │  Month 12+
 ```
 
+## Execution Model
+
+This roadmap is governed by the Hybrid Development Model:
+- [docs/phases/HYBRID_DEV_MODEL.md](docs/phases/HYBRID_DEV_MODEL.md)
+
+Phase playbooks:
+- [docs/phases/PHASE_0_FOUNDATION_SETUP.md](docs/phases/PHASE_0_FOUNDATION_SETUP.md)
+- [docs/phases/PHASE_1_MVP_CORE_BOOKING.md](docs/phases/PHASE_1_MVP_CORE_BOOKING.md)
+- [docs/phases/PHASE_2_GROWTH_RETENTION.md](docs/phases/PHASE_2_GROWTH_RETENTION.md)
+- [docs/phases/PHASE_3_MULTI_BARBER_PLATFORM.md](docs/phases/PHASE_3_MULTI_BARBER_PLATFORM.md)
+- [docs/phases/PHASE_4_MARKETPLACE_MONETIZATION.md](docs/phases/PHASE_4_MARKETPLACE_MONETIZATION.md)
+
 ---
 
 ## Phase 0 — Foundation & Setup `Week 1–2`
@@ -22,40 +34,40 @@ Phase 4  │  Marketplace & Monetisation │  Month 12+
 Goal: Zero to running local environment with DB, auth, and CI structure in place.
 
 ### Milestones
-- [ ] Flutter project scaffolded and running on device/emulator
-- [ ] Supabase project created, `.env` wired, local CLI working
+- [x] Flutter project scaffolded and running on device/emulator
+- [x] Appwrite project created, `.env` wired, local CLI working
 - [ ] Paystack sandbox account and test keys configured
-- [ ] Firebase project created (FCM enabled)
+- [x] Firebase project created (FCM enabled)
 - [ ] Africa's Talking sandbox account ready
-- [ ] All migrations applied to Supabase dev instance
-- [ ] Git repository structured with branch strategy defined
+- [ ] All migrations applied to Appwrite dev instance
+- [x] Git repository structured with branch strategy defined
 
 ### Tasks
 
 **Project Scaffold**
-- [ ] `flutter create jp_style_lounge_studio --org app.jpstyleloungestudio`
-- [ ] Add core dependencies to `pubspec.yaml`:
-  - `supabase_flutter`, `go_router`, `riverpod`, `flutter_stripe` (or paystack_flutter)
+- [x] `flutter create jp_style_lounge_studio --org app.jpstyleloungestudio`
+- [x] Add core dependencies to `pubspec.yaml`:
+  - `appwrite_flutter`, `go_router`, `riverpod`, `flutter_stripe` (or paystack_flutter)
   - `firebase_messaging`, `google_maps_flutter`, `image_picker`
   - `intl`, `table_calendar`, `fl_chart`
-- [ ] Setup `lib/` folder structure (`features/`, `core/`, `shared/`)
-- [ ] Configure `.env` & `flutter_dotenv`
+- [x] Setup `lib/` folder structure (`features/`, `core/`, `shared/`)
+- [x] Configure `.env` & `flutter_dotenv`
 - [ ] Add iOS/Android app icons and splash screen (Paps James's brand)
 
 **Backend & Database**
 - [ ] Apply `001_initial_schema.sql` migration
-- [ ] Seed the initial barber profile in the backend data store
-- [ ] Seed initial service catalog (prices in GH₵)
-- [ ] Seed recurring availability (Mon–Sat 9AM–7PM)
+- [x] Seed the initial barber profile in the backend data store
+- [x] Seed initial service catalog (prices in GH₵)
+- [x] Seed recurring availability (Mon–Sat 9AM–7PM)
 - [ ] Verify all RLS policies active and tested
 
 **Dev Environment**
-- [ ] Define Git branching: `main` → `develop` → `feature/*`
-- [ ] Setup linting (`flutter analyze`, `dart format`)
-- [ ] Add CI basics (GitHub Actions: lint + test on PR)
+- [x] Define Git branching: `main` → `develop` → `feature/*`
+- [x] Setup linting (`flutter analyze`, `dart format`)
+- [x] Add CI basics (GitHub Actions: lint + test on PR)
 
 ### Exit Criteria
-> Database seeded, app boots on emulator, Supabase client connects, auth test user created.
+> Database seeded, app boots on emulator, Appwrite client connects, auth test user created.
 
 ---
 
@@ -66,7 +78,7 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 ### Sprint 1 — Authentication & User Roles `Week 3–4`
 
 **Customer Auth**
-- [ ] Phone OTP login via Supabase Auth (Ghana +233 format)
+- [ ] Phone OTP login via Appwrite Auth (Ghana +233 format)
 - [ ] Email + password login
 - [ ] Google Sign-In (`google_sign_in` package)
 - [ ] Guest booking mode (skip login, prompt account creation post-booking)
@@ -80,8 +92,8 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 
 **Multi-Tenant Wiring**
 - [ ] Customer app resolves the active barber from route or tenant context in all queries
-- [ ] Supabase RLS: customers see only their own bookings
-- [ ] Supabase RLS: barber sees only bookings where `barber_id = auth.uid()`
+- [ ] Appwrite RLS: customers see only their own bookings
+- [ ] Appwrite RLS: barber sees only bookings where `barber_id = auth.uid()`
 
 **Screens**
 - [ ] Splash / loading screen
@@ -98,7 +110,7 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 - [ ] Google Maps widget pinned to barbershop location
 - [ ] WhatsApp deep link button
 - [ ] Instagram profile link button
-- [ ] Portfolio gallery (horizontal scroll, 10+ photos from Supabase Storage)
+- [ ] Portfolio gallery (horizontal scroll, 10+ photos from Appwrite Storage)
 - [ ] Average star rating + review count badge
 
 **Service Catalog**
@@ -116,7 +128,7 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 ### Sprint 3 — Availability & Calendar Engine `Week 5–6`
 
 **Backend Logic**
-- [ ] Supabase function / view: generate available time slots from `availability` table minus existing `bookings`
+- [ ] Appwrite function / view: generate available time slots from `availability` table minus existing `bookings`
 - [ ] 15-minute buffer time logic between bookings
 - [ ] Recurring weekly schedule (Mon–Sat) vs manual block support
 - [ ] Real-time subscription: slots update when new booking is created
@@ -154,7 +166,7 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 - [ ] Client name (pre-filled from auth profile)
 - [ ] Phone number (pre-filled, editable)
 - [ ] Special notes text area ("Low skin fade + lightning bolt")
-- [ ] Photo reference upload (optional, Supabase Storage)
+- [ ] Photo reference upload (optional, Appwrite Storage)
 - [ ] Summary card: service, date, time, price
 
 **Step 4: Payment**
@@ -163,7 +175,7 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 - [ ] Deposit mode toggle (configurable by barber — full or 50% deposit)
 - [ ] Optional tip selector (GH₵10 / GH₵20 / GH₵50 / Skip)
 - [ ] Loading overlay during payment processing
-- [ ] Paystack webhook handler (Supabase Edge Function) → mark `deposit_paid`
+- [ ] Paystack webhook handler (Appwrite Edge Function) → mark `deposit_paid`
 
 **Step 5: Confirmation**
 - [ ] Lottie success animation
@@ -175,7 +187,7 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 
 **Booking State Management**
 - [ ] `BookingNotifier` (Riverpod): holds wizard state across steps
-- [ ] Prevent double-booking: Supabase unique constraint + client-side slot lock
+- [ ] Prevent double-booking: Appwrite unique constraint + client-side slot lock
 
 ### Sprint 5 — Notifications System `Week 8–9`
 
@@ -183,7 +195,7 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 - [ ] Firebase project linked to Flutter app (iOS + Android)
 - [ ] Request notification permission on onboarding
 - [ ] Store FCM token in `users.fcm_token`
-- [ ] Notification triggers (Supabase Edge Functions or pg_cron):
+- [ ] Notification triggers (Appwrite Edge Functions or pg_cron):
   - Booking confirmed → immediate push
   - 24h before appointment → scheduled push
   - 1h before appointment → scheduled push
@@ -277,7 +289,7 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 **Quality & Reliability**
 - [ ] Offline mode: cache services + profile for no-internet viewing
 - [ ] Retry queue: failed bookings re-attempt on reconnect
-- [ ] Handle concurrent slot booking race condition (Supabase atomic transaction)
+- [ ] Handle concurrent slot booking race condition (Appwrite atomic transaction)
 - [ ] Error boundaries + user-friendly error screens
 - [ ] App-wide loading skeleton screens
 
@@ -302,10 +314,10 @@ Goal: A fully working booking app Paps James can use with real clients in Accra.
 **Launch Prep**
 - [ ] App Store Connect submission (iOS TestFlight)
 - [ ] Google Play Internal Testing track
-- [ ] Supabase production project (separate from dev)
+- [ ] Appwrite production project (separate from dev)
 - [ ] Production environment variables locked
 - [ ] Paystack live keys enabled
-- [ ] Monitoring: Supabase logs + Sentry error tracking
+- [ ] Monitoring: Appwrite logs + Sentry error tracking
 - [ ] Paps James onboarding: walkthrough video + admin doc
 
 ### Phase 1 Exit Criteria
@@ -397,7 +409,7 @@ Goal: Sustainable platform revenue model, become the top barber booking app in G
 |------|-----------|--------|-----------|
 | Paystack Mobile Money delays | Medium | High | Test sandbox extensively; have card fallback |
 | FCM push delivery failures in Ghana | Medium | Medium | SMS fallback via Africa's Talking |
-| Double-booking race condition | Low | High | Supabase atomic slot-lock transaction |
+| Double-booking race condition | Low | High | Appwrite atomic slot-lock transaction |
 | Client adoption resistance | Medium | High | WhatsApp share link; guest booking mode |
 | Paps James availability for testing | Low | Medium | Weekly check-ins; async Loom feedback |
 | App Store rejection | Low | Medium | Follow iOS HIG; no in-app currency workarounds |
@@ -408,7 +420,7 @@ Goal: Sustainable platform revenue model, become the top barber booking app in G
 
 | Service | Purpose | Status |
 |---------|---------|--------|
-| Supabase | Backend, DB, Auth, Storage | Setup needed |
+| Appwrite | Backend, DB, Auth, Storage | Setup needed |
 | Paystack | Payments (GH₵) | Account needed |
 | Firebase | Push notifications | Setup needed |
 | Africa's Talking | SMS (Ghana +233) | Account needed |

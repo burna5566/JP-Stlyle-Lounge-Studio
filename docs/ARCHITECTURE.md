@@ -1,7 +1,7 @@
 # JP Style Lounge Studio — Technical Architecture
 
 **Version:** 1.0  
-**Stack:** Flutter + Supabase + Paystack + Firebase
+**Stack:** Flutter + Appwrite + Paystack + Firebase
 
 ---
 
@@ -22,7 +22,7 @@
 │                    BACKEND LAYER                             │
 │            │                           │                     │
 │   ┌────────▼───────────────────────────▼──────────┐         │
-│   │              Supabase                          │         │
+│   │              Appwrite Cloud                    │         │
 │   │                                                │         │
 │   │  ┌─────────────┐  ┌──────────┐  ┌──────────┐ │         │
 │   │  │  PostgreSQL  │  │   Auth   │  │ Realtime │ │         │
@@ -62,14 +62,14 @@
 | State Management | Riverpod 2.x | Compile-safe, testable, no boilerplate |
 | Navigation | go_router | Deep link support (`jpstyleloungestudio.app/paps-james`); declarative routing |
 | UI Components | Material 3 | Modern, accessible, customisable |
-| HTTP Client | Supabase Flutter SDK | Auto-manages auth headers; realtime built-in |
+| HTTP Client | Appwrite Flutter SDK | Auth, databases, storage, and realtime APIs |
 | Local Storage | Hive / Isar | Fast offline cache for services and profile |
 
 **Key Flutter Packages**
 
 | Package | Purpose |
 |---------|---------|
-| `supabase_flutter` | Backend, auth, realtime |
+| `appwrite` | Backend, auth, databases, storage, realtime |
 | `riverpod` + `flutter_riverpod` | State management |
 | `go_router` | Navigation + deep links |
 | `paystack_flutter` | Payment checkout |
@@ -85,7 +85,7 @@
 
 ---
 
-### Backend — Supabase
+### Backend — Appwrite
 
 | Feature | Usage |
 |---------|-------|
@@ -121,7 +121,7 @@
 | Component | Detail |
 |-----------|--------|
 | Token storage | `users.fcm_token` in DB, refreshed on login |
-| Triggering | Supabase Edge Function calls FCM HTTP v1 API |
+| Triggering | Appwrite Edge Function calls FCM HTTP v1 API |
 | Scheduling | pg_cron jobs for 24h/1h reminders |
 | Topics | `barber-{barber_id}` topic for barber alerts |
 
@@ -242,7 +242,7 @@ slot_time       TIME NOT NULL
 duration        INTEGER        -- total including add-ons
 status          TEXT CHECK IN ('pending','confirmed','completed','cancelled','no_show')
 special_notes   TEXT
-reference_photo TEXT           -- Supabase Storage URL
+reference_photo TEXT           -- Appwrite Storage URL
 total_amount    DECIMAL(10,2)
 deposit_amount  DECIMAL(10,2)
 deposit_paid    BOOLEAN DEFAULT FALSE
@@ -355,14 +355,14 @@ CREATE POLICY "customers_insert_review" ON reviews
 
 | Concern | Mitigation |
 |---------|-----------|
-| SQL injection | Supabase parameterised queries; never raw SQL with user input |
+| SQL injection | Appwrite parameterised queries; never raw SQL with user input |
 | IDOR on bookings | RLS policies isolate all customer data by `auth.uid()` |
 | Paystack webhook spoofing | HMAC-SHA512 signature verification in Edge Function |
 | FCM token theft | Tokens scoped to device; rotated on each login |
 | Card data storage | Zero — Paystack handles all PCI scope |
-| XSS (web dashboard future) | Supabase SDK escapes all output; CSP headers |
-| Rate limiting | Supabase built-in rate limiting on auth endpoints |
-| Secret management | All API keys in Supabase Edge Function secrets (never in app bundle) |
+| XSS (web dashboard future) | Appwrite SDK escapes all output; CSP headers |
+| Rate limiting | Appwrite built-in rate limiting on auth endpoints |
+| Secret management | Appwrite API keys and provider secrets live in server/function/CI environments, never in the Flutter bundle |
 | Sensitive env vars | `.env` gitignored; production secrets via CI secrets |
 
 ---
@@ -382,16 +382,19 @@ CREATE POLICY "customers_insert_review" ON reviews
 
 ## Deployment & Environments
 
-| Environment | Supabase Project | Purpose |
+| Environment | Appwrite Project / Database | Purpose |
 |------------|-----------------|---------|
 | `dev` | jp-style-lounge-studio-dev | Local development |
 | `staging` | jp-style-lounge-studio-staging | QA + Paps James testing |
 | `production` | jp-style-lounge-studio-prod | Live client bookings |
 
-**Flutter build flavours:**
-- `--dart-define=ENVIRONMENT=dev`
-- `--dart-define=ENVIRONMENT=staging`
-- `--dart-define=ENVIRONMENT=production`
+**Flutter build environments:**
+- `--dart-define=APP_ENV=development`
+- `--dart-define=APP_ENV=staging`
+- `--dart-define=APP_ENV=production`
+
+`ENVIRONMENT` is accepted as a compatibility fallback, but `APP_ENV` is the
+canonical build define.
 
 ---
 
