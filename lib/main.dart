@@ -39,26 +39,63 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(
-    fileName: kAppEnv == 'development' ? '.env.development' : '.env.production',
-  );
+  try {
+    await dotenv.load(
+      fileName: kAppEnv == 'development'
+          ? '.env.development'
+          : '.env.production',
+    );
 
-  await NotificationService.instance.initialize(
-    backgroundHandler: firebaseMessagingBackgroundHandler,
-  );
+    await NotificationService.instance.initialize(
+      backgroundHandler: firebaseMessagingBackgroundHandler,
+    );
 
-  final appwriteConfigValid = RuntimeGuard.verifyAppwriteConfig();
+    final appwriteConfigValid = RuntimeGuard.verifyAppwriteConfig();
 
-  runApp(JpStyleLoungeStudioApp(appwriteConfigValid: appwriteConfigValid));
+    runApp(JpStyleLoungeStudioApp(appwriteConfigValid: appwriteConfigValid));
+  } on Object catch (error, stackTrace) {
+    debugPrint('App startup failed: $error');
+    debugPrintStack(stackTrace: stackTrace);
+
+    runApp(
+      JpStyleLoungeStudioApp(
+        appwriteConfigValid: false,
+        startupError: 'Startup failed: $error',
+      ),
+    );
+  }
 }
 
 class JpStyleLoungeStudioApp extends StatelessWidget {
-  const JpStyleLoungeStudioApp({required this.appwriteConfigValid, super.key});
+  const JpStyleLoungeStudioApp({
+    required this.appwriteConfigValid,
+    this.startupError,
+    super.key,
+  });
 
   final bool appwriteConfigValid;
+  final String? startupError;
 
   @override
   Widget build(BuildContext context) {
+    if (startupError != null) {
+      return MaterialApp(
+        title: 'JP Style Lounge Studio',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light(),
+        home: Scaffold(
+          appBar: AppBar(title: const Text('JP Style Lounge Studio')),
+          body: Padding(
+            padding: const EdgeInsets.all(16),
+            child: SelectableText(
+              startupError!,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ),
+      );
+    }
+
     final router = AppRouter.create(appwriteConfigValid: appwriteConfigValid);
 
     return MaterialApp.router(

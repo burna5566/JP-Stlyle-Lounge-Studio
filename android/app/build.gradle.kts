@@ -17,6 +17,10 @@ if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
 }
 
+val isReleaseBuildRequested = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("release", ignoreCase = true) || taskName.contains("bundle", ignoreCase = true)
+}
+
 android {
     namespace = "app.jpstyleloungestudio.jp_style_lounge_studio"
     compileSdk = flutter.compileSdkVersion
@@ -56,14 +60,16 @@ android {
 
     buildTypes {
         release {
-            if (!keystorePropertiesFile.exists()) {
+            if (!keystorePropertiesFile.exists() && isReleaseBuildRequested) {
                 throw GradleException(
                     "Missing android/key.properties for release signing. " +
                         "Copy android/key.properties.example to android/key.properties and fill real values.",
                 )
             }
 
-            signingConfig = signingConfigs.getByName("release")
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 }

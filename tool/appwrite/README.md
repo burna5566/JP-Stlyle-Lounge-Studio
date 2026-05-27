@@ -96,3 +96,73 @@ Your Paystack webhook function can now:
 - Store `payment_ref` (Paystack transaction reference) in bookings
 - Set `deposit_paid = true` when `charge.success` webhook arrives
 - Update `status = 'confirmed'` atomically with deposit confirmation
+
+---
+
+## Script: reconcile_pending_deposits.dart
+
+Purpose:
+- One-off reconciliation for stale bookings where `payment_ref` exists but
+	`deposit_paid` stayed null/false and `status` is still pending.
+- Verifies each candidate via Paystack API before patching Appwrite.
+
+### Required Environment Variables
+
+Loaded from shell exports or `.appwrite.secrets`:
+- `APPWRITE_ENDPOINT`
+- `APPWRITE_PROJECT_ID`
+- `APPWRITE_API_KEY`
+- `APPWRITE_DATABASE_ID`
+- `APPWRITE_BOOKINGS_COLLECTION_ID`
+- `PAYSTACK_SECRET_KEY`
+
+Optional:
+- `RECONCILE_MIN_AGE_MINUTES` (default: `15`)
+
+### Run
+
+Dry run (no updates):
+
+```bash
+dart run tool/appwrite/reconcile_pending_deposits.dart
+```
+
+Apply updates:
+
+```bash
+dart run tool/appwrite/reconcile_pending_deposits.dart --apply
+```
+
+---
+
+## Function: paystack-reconcile
+
+Purpose:
+- Admin-only endpoint to reconcile one booking by `reference` or `bookingId`.
+- Validates payment status directly with Paystack before updating booking.
+
+### Required Function Env Vars
+
+- `APPWRITE_ENDPOINT`
+- `APPWRITE_PROJECT_ID`
+- `APPWRITE_API_KEY`
+- `APPWRITE_DATABASE_ID`
+- `APPWRITE_BOOKINGS_COLLECTION_ID`
+- `PAYSTACK_SECRET_KEY`
+- `RECONCILE_ADMIN_TOKEN`
+
+### Request Example
+
+Headers:
+
+```text
+x-reconcile-token: <RECONCILE_ADMIN_TOKEN>
+```
+
+Body:
+
+```json
+{
+	"reference": "jp_..."
+}
+```

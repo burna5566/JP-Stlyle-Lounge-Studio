@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - JP Style Lounge Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px 30px;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .details {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1a1a1a;
+            font-weight: 600;
+            word-break: break-all;
+            max-width: 180px;
+            text-align: right;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a1a;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message {
+            font-size: 14px;
+            color: #888;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .error-message {
+            background: #ffebee;
+            border: 1px solid #fcb4b4;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            border: 1px solid #b7d8b7;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .checkmark {
+                width: 70px;
+                height: 70px;
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="checkmark">✓</div>
+            <h1>Payment Successful!</h1>
+        </div>
+
+        <p class="subtitle">Your booking deposit has been received. Your appointment is now confirmed.</p>
+
+        <div class="details">
+            <div class="detail-row">
+                <span class="detail-label">Booking ID:</span>
+                <span class="detail-value" id="bookingId">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Reference:</span>
+                <span class="detail-value" id="reference">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value" style="color: #4CAF50;">Confirmed</span>
+            </div>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="returnToApp()">
+                Return to JP Style Lounge
+            </button>
+            <button class="btn-secondary" onclick="copyDetails()">
+                Copy Details
+            </button>
+        </div>
+
+        <p class="message">You will be redirected automatically in a few seconds...</p>
+    </div>
+
+    <script>
+        // Extract URL parameters
+        function getParam(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name) || '—';
+        }
+
+        function isMobileBrowser() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        // Initialize page with booking details
+        function initPage() {
+            const bookingId = getParam('bookingId');
+            const reference = getParam('reference');
+            const status = getParam('status');
+
+            if (bookingId && bookingId !== '—') {
+                document.getElementById('bookingId').textContent = bookingId;
+            }
+
+            if (reference && reference !== '—') {
+                document.getElementById('reference').textContent = reference;
+            }
+
+            // Show error message if payment failed
+            if (status === 'failed') {
+                showError('Payment was not completed. Please try again.');
+                document.querySelector('.checkmark').textContent = '✕';
+                document.querySelector('.checkmark').parentElement.style.background = '#f44336';
+                document.querySelector('h1').textContent = 'Payment Failed';
+                document.querySelector('.subtitle').textContent = 'Your payment could not be processed. Please try again or contact support.';
+                return;
+            }
+
+            if (isMobileBrowser()) {
+                // Auto-redirect after 5 seconds only on mobile browsers.
+                setTimeout(() => {
+                    returnToApp();
+                }, 5000);
+            } else {
+                showMessage('Open this page on your phone to return to JP Style Lounge automatically.');
+            }
+        }
+
+        // Return to app via deep link
+        function returnToApp() {
+            const bookingId = getParam('bookingId');
+            const reference = getParam('reference');
+
+            if (!isMobileBrowser()) {
+                showMessage('Deep link return is only available on mobile devices.');
+                return;
+            }
+
+            // Try to open the deep link
+            if (bookingId && bookingId !== '—') {
+                const deepLink = `jpstylelounge://payment-return?bookingId=${encodeURIComponent(bookingId)}&reference=${encodeURIComponent(reference)}`;
+                window.location.href = deepLink;
+
+                // Fallback: if deep link doesn't work, try opening app store or show message
+                setTimeout(() => {
+                    showMessage('If the app did not open, please open JP Style Lounge manually to view your booking.');
+                }, 1500);
+            }
+        }
+
+        function copyDetails() {
+            const bookingId = document.getElementById('bookingId').textContent;
+            const reference = document.getElementById('reference').textContent;
+            const text = `Booking ID: ${bookingId}\nReference: ${reference}`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function showError(message) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+
+        function showMessage(message) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="success-message">${message}</div>`;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

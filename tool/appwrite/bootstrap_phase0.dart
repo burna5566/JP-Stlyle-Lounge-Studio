@@ -57,49 +57,89 @@ Future<void> _seedBarberProfile(
 Future<void> _seedServices(Databases databases, _BootstrapConfig config) async {
   final services = <Map<String, dynamic>>[
     {
-      'id': 'service-skin-fade',
-      'name': 'Skin Fade',
+      'id': 'service-haircut',
+      'name': 'Haircut',
       'durationMinutes': 45,
-      'priceGhs': 80,
-      'audience': 'male',
+      'priceGhs': 70,
+      'audience': 'unisex',
       'isActive': true,
     },
     {
-      'id': 'service-haircut-beard',
-      'name': 'Haircut + Beard Trim',
-      'durationMinutes': 60,
-      'priceGhs': 120,
-      'audience': 'male',
-      'isActive': true,
-    },
-    {
-      'id': 'service-silk-press',
-      'name': 'Silk Press + Trim',
-      'durationMinutes': 75,
-      'priceGhs': 160,
-      'audience': 'female',
-      'isActive': true,
-    },
-    {
-      'id': 'service-braids-styling',
-      'name': 'Braids Styling',
+      'id': 'service-haircut-dye',
+      'name': 'Haircut & Dye',
       'durationMinutes': 90,
-      'priceGhs': 180,
-      'audience': 'female',
+      'priceGhs': 100,
+      'audience': 'unisex',
       'isActive': true,
     },
     {
-      'id': 'service-kids-cut',
-      'name': 'Kids Haircut',
+      'id': 'service-permcut',
+      'name': 'Permcut',
+      'durationMinutes': 60,
+      'priceGhs': 80,
+      'audience': 'unisex',
+      'isActive': true,
+    },
+    {
+      'id': 'service-kids',
+      'name': 'Kids',
       'durationMinutes': 35,
-      'priceGhs': 60,
+      'priceGhs': 50,
+      'audience': 'unisex',
+      'isActive': true,
+    },
+    {
+      'id': 'service-shape-shave',
+      'name': 'Shape & Shave',
+      'durationMinutes': 45,
+      'priceGhs': 50,
+      'audience': 'unisex',
+      'isActive': true,
+    },
+    {
+      'id': 'service-texturalize',
+      'name': 'Texturalize',
+      'durationMinutes': 60,
+      'priceGhs': 50,
+      'audience': 'unisex',
+      'isActive': true,
+    },
+    {
+      'id': 'service-dye-only',
+      'name': 'Dye Only',
+      'durationMinutes': 60,
+      'priceGhs': 50,
+      'audience': 'unisex',
+      'isActive': true,
+    },
+    {
+      'id': 'service-bleach',
+      'name': 'Bleach',
+      'durationMinutes': 120,
+      'priceGhs': 200,
+      'audience': 'unisex',
+      'isActive': true,
+    },
+    {
+      'id': 'service-colour-dye',
+      'name': 'Colour Dye',
+      'durationMinutes': 90,
+      'priceGhs': 100,
+      'audience': 'unisex',
+      'isActive': true,
+    },
+    {
+      'id': 'service-appointment-booking',
+      'name': 'Appointment Booking',
+      'durationMinutes': 30,
+      'priceGhs': 150,
       'audience': 'unisex',
       'isActive': true,
     },
   ];
 
   for (final service in services) {
-    await _createOrSkipRow(
+    await _createOrUpdateRow(
       databases: databases,
       databaseId: config.databaseId,
       tableId: config.servicesTableId,
@@ -114,6 +154,20 @@ Future<void> _seedServices(Databases databases, _BootstrapConfig config) async {
       label: 'service ${service['name']}',
     );
   }
+
+  await _deleteLegacyRows(
+    databases: databases,
+    databaseId: config.databaseId,
+    tableId: config.servicesTableId,
+    rowIds: const [
+      'service-skin-fade',
+      'service-haircut-beard',
+      'service-silk-press',
+      'service-braids-styling',
+      'service-kids-cut',
+    ],
+    label: 'legacy service',
+  );
 }
 
 Future<void> _seedAvailability(
@@ -121,20 +175,71 @@ Future<void> _seedAvailability(
   _BootstrapConfig config,
 ) async {
   for (var dayOfWeek = 1; dayOfWeek <= 6; dayOfWeek++) {
-    await _createOrSkipRow(
+    await _createOrUpdateRow(
       databases: databases,
       databaseId: config.databaseId,
       tableId: config.availabilityTableId,
       rowId: 'availability-day-$dayOfWeek',
       data: {
         'dayOfWeek': dayOfWeek,
-        'startTime': '09:00',
-        'endTime': '19:00',
+        'startTime': '08:30',
+        'endTime': '21:00',
         'isBlocked': false,
       },
       label: 'availability day $dayOfWeek',
     );
   }
+
+  await _createOrUpdateRow(
+    databases: databases,
+    databaseId: config.databaseId,
+    tableId: config.availabilityTableId,
+    rowId: 'availability-day-7',
+    data: {
+      'dayOfWeek': 7,
+      'startTime': '14:00',
+      'endTime': '21:00',
+      'isBlocked': false,
+    },
+    label: 'availability day 7',
+  );
+}
+
+Future<void> _createOrUpdateRow({
+  required Databases databases,
+  required String databaseId,
+  required String tableId,
+  required String rowId,
+  required Map<String, dynamic> data,
+  required String label,
+}) async {
+  try {
+    await databases.getDocument(
+      databaseId: databaseId,
+      collectionId: tableId,
+      documentId: rowId,
+    );
+
+    await databases.updateDocument(
+      databaseId: databaseId,
+      collectionId: tableId,
+      documentId: rowId,
+      data: data,
+    );
+
+    stdout.writeln('Updated $label ($rowId).');
+    return;
+  } on AppwriteException {
+    // Row not found; create below.
+  }
+
+  await databases.createDocument(
+    databaseId: databaseId,
+    collectionId: tableId,
+    documentId: rowId,
+    data: data,
+  );
+  stdout.writeln('Created $label ($rowId).');
 }
 
 Future<void> _createOrSkipRow({
@@ -164,6 +269,27 @@ Future<void> _createOrSkipRow({
     data: data,
   );
   stdout.writeln('Created $label ($rowId).');
+}
+
+Future<void> _deleteLegacyRows({
+  required Databases databases,
+  required String databaseId,
+  required String tableId,
+  required List<String> rowIds,
+  required String label,
+}) async {
+  for (final rowId in rowIds) {
+    try {
+      await databases.deleteDocument(
+        databaseId: databaseId,
+        collectionId: tableId,
+        documentId: rowId,
+      );
+      stdout.writeln('Deleted $label ($rowId).');
+    } on AppwriteException {
+      stdout.writeln('Skip missing $label ($rowId).');
+    }
+  }
 }
 
 class _BootstrapConfig {

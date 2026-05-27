@@ -23,4 +23,21 @@ void main() {
     );
     expect(find.text('Choose service'), findsOneWidget);
   });
+
+  testWidgets('shows startup fallback error message', (
+    WidgetTester tester,
+  ) async {
+    const startupError =
+        'Startup failed: Missing Firebase configuration for current platform.';
+
+    await tester.pumpWidget(
+      const JpStyleLoungeStudioApp(
+        appwriteConfigValid: false,
+        startupError: startupError,
+      ),
+    );
+
+    expect(find.text('JP Style Lounge Studio'), findsOneWidget);
+    expect(find.text(startupError), findsOneWidget);
+  });
 }

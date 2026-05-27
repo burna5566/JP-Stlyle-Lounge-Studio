@@ -35,6 +35,34 @@ class AppwriteBookingService {
   final String audience;
 }
 
+class StalePendingBookingAlert {
+  const StalePendingBookingAlert({
+    required this.bookingId,
+    required this.paymentReference,
+    required this.createdAt,
+    required this.status,
+  });
+
+  final String bookingId;
+  final String paymentReference;
+  final DateTime createdAt;
+  final String status;
+}
+
+class BookingPaymentStatus {
+  const BookingPaymentStatus({
+    required this.bookingId,
+    required this.status,
+    required this.depositPaid,
+    required this.paymentReference,
+  });
+
+  final String bookingId;
+  final String status;
+  final bool depositPaid;
+  final String paymentReference;
+}
+
 class AppwriteBookingRepository {
   AppwriteBookingRepository({
     required AppwriteConfig config,
@@ -149,6 +177,88 @@ class AppwriteBookingRepository {
       authorizationUrl: authorizationUrl,
       accessCode: accessCode,
       reference: reference,
+    );
+  }
+
+  Future<List<StalePendingBookingAlert>> findStalePendingBookingsByPhone({
+    required String phone,
+    Duration minimumAge = const Duration(minutes: 15),
+    int limit = 25,
+  }) async {
+    final normalizedPhone = phone.trim();
+    if (normalizedPhone.isEmpty) {
+      return const [];
+    }
+
+    final result = await _tablesDb.listRows(
+      databaseId: _config.databaseId,
+      tableId: _config.bookingsCollectionId,
+      queries: [
+        Query.equal('customerPhone', normalizedPhone),
+        Query.limit(limit),
+      ],
+    );
+
+    final now = DateTime.now().toUtc();
+    final alerts = <StalePendingBookingAlert>[];
+
+    for (final row in result.rows) {
+      final paymentReference = (row.data['payment_ref'] ?? '')
+          .toString()
+          .trim();
+      if (paymentReference.isEmpty) {
+        continue;
+      }
+
+      if (row.data['deposit_paid'] == true) {
+        continue;
+      }
+
+      final status = (row.data['status'] ?? '').toString().trim().toLowerCase();
+      if (status != 'pending') {
+        continue;
+      }
+
+      final createdAt = DateTime.tryParse(row.$createdAt)?.toUtc();
+      if (createdAt == null) {
+        continue;
+      }
+
+      if (now.difference(createdAt) < minimumAge) {
+        continue;
+      }
+
+      alerts.add(
+        StalePendingBookingAlert(
+          bookingId: row.$id,
+          paymentReference: paymentReference,
+          createdAt: createdAt,
+          status: status,
+        ),
+      );
+    }
+
+    alerts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return alerts;
+  }
+
+  Future<BookingPaymentStatus> fetchBookingPaymentStatus({
+    required String bookingId,
+  }) async {
+    final row = await _tablesDb.getRow(
+      databaseId: _config.databaseId,
+      tableId: _config.bookingsCollectionId,
+      rowId: bookingId,
+    );
+
+    final status = (row.data['status'] ?? '').toString().trim().toLowerCase();
+    final paymentReference = (row.data['payment_ref'] ?? '').toString().trim();
+
+    return BookingPaymentStatus(
+      bookingId: row.$id,
+      status: status,
+      depositPaid: row.data['deposit_paid'] == true,
+      paymentReference: paymentReference,
     );
   }
 
