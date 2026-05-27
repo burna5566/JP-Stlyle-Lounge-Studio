@@ -17,7 +17,7 @@ class AppRouter {
 
   static GoRouter create({
     required bool appwriteConfigValid,
-    required Ref ref,
+    required WidgetRef ref,
   }) {
     return GoRouter(
       initialLocation: '/',
@@ -67,19 +67,19 @@ class AppRouter {
       },
       routes: [
         // Entry point — session check
-        GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
+        GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
         GoRoute(
           path: '/onboarding',
-          builder: (_, __) => const OnboardingScreen(),
+          builder: (_, _) => const OnboardingScreen(),
         ),
-        GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
-        GoRoute(path: '/otp', builder: (_, __) => const OtpScreen()),
-        GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
+        GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
+        GoRoute(path: '/otp', builder: (_, _) => const OtpScreen()),
+        GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
         GoRoute(
           path: '/profile-setup',
-          builder: (_, __) => const ProfileSetupScreen(),
+          builder: (_, _) => const ProfileSetupScreen(),
         ),
-        GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
+        GoRoute(path: '/home', builder: (_, _) => const HomeScreen()),
         GoRoute(
           path: '/booking',
           builder: (context, state) =>
@@ -87,7 +87,7 @@ class AppRouter {
         ),
         GoRoute(
           path: '/dashboard',
-          builder: (_, __) => const BarberDashboardScreen(),
+          builder: (_, _) => const BarberDashboardScreen(),
         ),
       ],
     );

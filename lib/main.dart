@@ -73,7 +73,7 @@ void main() async {
   }
 }
 
-class JpStyleLoungeStudioApp extends StatelessWidget {
+class JpStyleLoungeStudioApp extends ConsumerWidget {
   const JpStyleLoungeStudioApp({
     required this.appwriteConfigValid,
     this.startupError,
@@ -84,7 +84,7 @@ class JpStyleLoungeStudioApp extends StatelessWidget {
   final String? startupError;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (startupError != null) {
       return MaterialApp(
         title: 'JP Style Lounge Studio',
@@ -103,21 +103,17 @@ class JpStyleLoungeStudioApp extends StatelessWidget {
       );
     }
 
-    // Router needs a Ref to read auth state for redirect guards.
-    // We use a Consumer to get the ref inside build.
-    return Consumer(
-      builder: (context, ref, _) {
-        final router = AppRouter.create(
-          appwriteConfigValid: appwriteConfigValid,
-          ref: ref as Ref,
-        );
-        return MaterialApp.router(
-          title: 'JP Style Lounge Studio',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light(),
-          routerConfig: router,
-        );
-      },
+    // Router needs access to Riverpod context for auth state redirect guards.
+    // As a ConsumerWidget, ref is directly available here.
+    final router = AppRouter.create(
+      appwriteConfigValid: appwriteConfigValid,
+      ref: ref,
+    );
+    return MaterialApp.router(
+      title: 'JP Style Lounge Studio',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light(),
+      routerConfig: router,
     );
   }
 }
