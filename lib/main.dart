@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/appwrite/runtime_guard.dart';
 import 'core/router/app_router.dart';
@@ -52,15 +53,21 @@ void main() async {
 
     final appwriteConfigValid = RuntimeGuard.verifyAppwriteConfig();
 
-    runApp(JpStyleLoungeStudioApp(appwriteConfigValid: appwriteConfigValid));
+    runApp(
+      ProviderScope(
+        child: JpStyleLoungeStudioApp(appwriteConfigValid: appwriteConfigValid),
+      ),
+    );
   } on Object catch (error, stackTrace) {
     debugPrint('App startup failed: $error');
     debugPrintStack(stackTrace: stackTrace);
 
     runApp(
-      JpStyleLoungeStudioApp(
-        appwriteConfigValid: false,
-        startupError: 'Startup failed: $error',
+      ProviderScope(
+        child: JpStyleLoungeStudioApp(
+          appwriteConfigValid: false,
+          startupError: 'Startup failed: $error',
+        ),
       ),
     );
   }
@@ -96,13 +103,21 @@ class JpStyleLoungeStudioApp extends StatelessWidget {
       );
     }
 
-    final router = AppRouter.create(appwriteConfigValid: appwriteConfigValid);
-
-    return MaterialApp.router(
-      title: 'JP Style Lounge Studio',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      routerConfig: router,
+    // Router needs a Ref to read auth state for redirect guards.
+    // We use a Consumer to get the ref inside build.
+    return Consumer(
+      builder: (context, ref, _) {
+        final router = AppRouter.create(
+          appwriteConfigValid: appwriteConfigValid,
+          ref: ref as Ref,
+        );
+        return MaterialApp.router(
+          title: 'JP Style Lounge Studio',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light(),
+          routerConfig: router,
+        );
+      },
     );
   }
 }
